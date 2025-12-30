@@ -77,15 +77,19 @@ public class Data {
     private void readCSVFile(File csvFile) throws IOException {
         // open file
         try (Reader reader = new FileReader(csvFile)) {
-            CSVFormat strategy = CSVFormat.DEFAULT.
-                    withHeader().
-                    withDelimiter(',').
-                    withQuote('"').
-                    withCommentMarker((char)0).
-                    withIgnoreEmptyLines().
-                    withIgnoreSurroundingSpaces();
+            CSVFormat strategy = CSVFormat.Builder.create().
+                    setHeader().
+                    setDelimiter(',').
+                    setQuote('"').
+                    setCommentMarker((char)0).
+                    setIgnoreEmptyLines(true).
+                    setIgnoreSurroundingSpaces(true).
+                    get();
 
-            try (CSVParser parser = new CSVParser(reader, strategy)) {
+            try (CSVParser parser = CSVParser.builder().
+                    setReader(reader).
+                    setFormat(strategy).
+                    get()) {
                 Map<String, Integer> headerMap = parser.getHeaderMap();
                 for(Map.Entry<String,Integer> entry : headerMap.entrySet()) {
                     headers.add(entry.getKey());
@@ -153,17 +157,11 @@ public class Data {
                         // store null-data for empty/missing cells
                         data.add(null);
                     } else {
-                        final String value;
                         //noinspection SwitchStatementWithTooFewBranches
-                        switch (cell.getCellType()) {
-                            case NUMERIC:
-                                // ensure that numeric are formatted the same way as in the Excel file.
-                                value = CellFormat.getInstance(cell.getCellStyle().getDataFormatString()).apply(cell).text;
-                                break;
-                            default:
-                                // all others can use the default value from toString() for now.
-                                value = cell.toString();
-                        }
+                        final String value = switch (cell.getCellType()) {
+                            case NUMERIC -> CellFormat.getInstance(cell.getCellStyle().getDataFormatString()).apply(cell).text;
+                            default -> cell.toString();
+                        };
 
                         data.add(value);
                     }
