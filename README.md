@@ -103,6 +103,12 @@ convert the resulting docx, e.g. to PDF:
 
     unoconv -vvv --timeout=60 --doctype=document --output=result.pdf result.docx
 
+### Interesting forks
+
+There are a few forks which modified the implementation:
+* [pon300/poi-mail-merge](https://github.com/pon300/poi-mail-merge) - Changed implementation to produce one .docx - file per line - [#27](https://github.com/centic9/poi-mail-merge/issues/27)
+* [SunnyTam/poi-mail-merge](https://github.com/SunnyTam/poi-mail-merge) - Changed implementation to work with the older format via .doc-files - [#26](https://github.com/centic9/poi-mail-merge/issues/26)
+
 ## Known issues
 
 ### Only XLS/XLSX and one CSV format supported
